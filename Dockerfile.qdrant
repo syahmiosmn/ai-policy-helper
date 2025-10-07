@@ -1,0 +1,4 @@
+FROM qdrant/qdrant:latest
+
+# Install curl (the image runs as root by default during build)
+RUN apt-get update && apt-get install -y curl
