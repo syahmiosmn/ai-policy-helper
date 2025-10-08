@@ -68,9 +68,14 @@ class QdrantStore:
             )
 
     def upsert(self, vectors: List[np.ndarray], metadatas: List[Dict]):
+        import uuid
         points = []
         for i, (v, m) in enumerate(zip(vectors, metadatas)):
-            points.append(qm.PointStruct(id=m.get("id") or m.get("hash") or i, vector=v.tolist(), payload=m))
+            points.append(qm.PointStruct(
+                id=str(uuid.uuid4()),  # Random UUID
+                vector=v.tolist(), 
+                payload=m
+            ))
         self.client.upsert(collection_name=self.collection, points=points)
 
     def search(self, query: np.ndarray, k: int = 4) -> List[Tuple[float, Dict]]:
