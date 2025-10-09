@@ -21,3 +21,14 @@ export async function apiMetrics() {
   if (!r.ok) throw new Error('Metrics failed');
   return r.json();
 }
+
+export async function apiHealth() {
+  try {
+    const r = await fetch(`${API_BASE}/api/health`);
+    if (!r.ok) throw new Error('Health check failed');
+    return await r.json();
+  } catch (err) {
+    console.error('Health check failed:', err);
+    return { status: 'error', error: String(err) };
+  }
+}
