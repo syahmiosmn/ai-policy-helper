@@ -73,7 +73,7 @@ Vector DB: Qdrant (Docker)
 
 ## 5. Notes & Trade-offs
 
-- **Fixed embedding function**  
+- **Embedding function**  
   The embed function generates a deterministic, local embedding for any text without using an external model.
 
   **Trade-offs:**  
