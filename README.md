@@ -95,3 +95,7 @@ Vector DB: Qdrant (Docker)
 - **File uploads**: Allow users to upload new policy/product documents with type validation.  
 - **Frontend UX polish**: Better loading states, error handling, responsive design, and accessibility.  
 - **Performance optimization**: Cache frequent queries, reduce latency, and monitor metrics.
+
+## 7. Video Demo
+[![Watch demo](https://img.youtube.com/vi/oEVUIni9TTc/maxresdefault.jpg)](https://youtu.be/oEVUIni9TTc)
+
