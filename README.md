@@ -20,10 +20,11 @@ Supports document ingestion, question-answering with **citations**, metrics, hea
 ## Quick Start (Docker)
 
 ## 1. Set up your OpenAI api key in .env
-
 ```
 OPENAI_API_KEY=sk-xxxxx
 ```
+If your api key is invalid, try generate a new one.
+
 ## 2. Run all services:
    
 ```bash
