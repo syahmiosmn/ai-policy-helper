@@ -10,18 +10,21 @@ def _tokenize(s: str) -> List[str]:
     return [t.lower() for t in s.split()]
 
 class LocalEmbedder:
-    def __init__(self, dim: int = 384):
+    def __init__(self, dim: int = 384, ngram: int = 3):
         self.dim = dim
-
+        self.ngram = ngram
+        
     def embed(self, text: str) -> np.ndarray:
-        # Hash-based repeatable pseudo-embedding
-        h = hashlib.sha1(text.encode("utf-8")).digest()
-        rng_seed = int.from_bytes(h[:8], "big") % (2**32-1)
-        rng = np.random.default_rng(rng_seed)
-        v = rng.standard_normal(self.dim).astype("float32")
-        # L2 normalize
-        v = v / (np.linalg.norm(v) + 1e-9)
-        return v
+        vec = np.zeros(self.dim, dtype="float32")
+        text = text.lower()
+        ngrams = [text[i:i+self.ngram] for i in range(len(text) - self.ngram + 1)]
+        for ng in ngrams:
+            h = int.from_bytes(hashlib.sha1(ng.encode("utf-8")).digest()[:4], "big")
+            idx = h % self.dim
+            vec[idx] += 1.0
+        # Normalize vector
+        vec = vec / (np.linalg.norm(vec) + 1e-9)
+        return vec
 
 # ---- Vector store abstraction ----
 class InMemoryStore:
