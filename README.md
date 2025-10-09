@@ -8,9 +8,9 @@ Supports document ingestion, question-answering with **citations**, metrics, hea
 ## Features
 
 - Ingest policy/product documents (Markdown, PDF, etc.)  
-- RAG-based question answering with **chunk-level citations**  
-- Offline-friendly stub LLM & built-in embeddings  
-- Optional OpenAI integration for real LLM answers  
+- RAG-based question answering with chunk-level citations  
+- Built-in embeddings  
+- OpenAI integration for real LLM answers  
 - Metrics & health endpoints for observability  
 - Minimal responsive chat UI with citation expansion  
 - Fully containerized via Docker Compose
