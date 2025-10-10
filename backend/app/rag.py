@@ -4,6 +4,8 @@ import numpy as np
 from .settings import settings
 from .ingest import chunk_text, doc_hash
 from qdrant_client import QdrantClient, models as qm
+import hashlib, uuid
+from sentence_transformers import SentenceTransformer
 
 # ---- Simple local embedder (deterministic) ----
 def _tokenize(s: str) -> List[str]:
@@ -12,19 +14,23 @@ def _tokenize(s: str) -> List[str]:
 class LocalEmbedder:
     def __init__(self, dim: int = 384, ngram: int = 3):
         self.dim = dim
-        self.ngram = ngram
-        
+        self.model = SentenceTransformer("all-MiniLM-L6-v2")
+
     def embed(self, text: str) -> np.ndarray:
-        vec = np.zeros(self.dim, dtype="float32")
-        text = text.lower()
-        ngrams = [text[i:i+self.ngram] for i in range(len(text) - self.ngram + 1)]
-        for ng in ngrams:
-            h = int.from_bytes(hashlib.sha1(ng.encode("utf-8")).digest()[:4], "big")
-            idx = h % self.dim
-            vec[idx] += 1.0
-        # Normalize vector
-        vec = vec / (np.linalg.norm(vec) + 1e-9)
-        return vec
+        try:
+            v = self.model.encode(text)
+            # Ensure vector is float32 and normalized
+            v = np.array(v, dtype="float32")
+            v = v / (np.linalg.norm(v) + 1e-9)
+            return v
+        except Exception as e:
+            # Fallback to old hash-based method
+            h = hashlib.sha1(text.encode("utf-8")).digest()
+            rng_seed = int.from_bytes(h[:8], "big") % (2**32-1)
+            rng = np.random.default_rng(rng_seed)
+            v = rng.standard_normal(self.dim).astype("float32")
+            v = v / (np.linalg.norm(v) + 1e-9)
+            return v
 
 # ---- Vector store abstraction ----
 class InMemoryStore:
@@ -71,12 +77,13 @@ class QdrantStore:
             )
 
     def upsert(self, vectors: List[np.ndarray], metadatas: List[Dict]):
-        import uuid
         points = []
-        for i, (v, m) in enumerate(zip(vectors, metadatas)):
+        for v, m in zip(vectors, metadatas):
+            # Use deterministic ID based on the text content
+            point_id = make_id_from_text(m["text"])
             points.append(qm.PointStruct(
-                id=str(uuid.uuid4()),  # Random UUID
-                vector=v.tolist(), 
+                id=point_id,
+                vector=v.tolist(),
                 payload=m
             ))
         self.client.upsert(collection_name=self.collection, points=points)
@@ -225,3 +232,8 @@ def build_chunks_from_docs(docs: List[Dict], chunk_size: int, overlap: int) -> L
         for ch in chunk_text(d["text"], chunk_size, overlap):
             out.append({"title": d["title"], "section": d["section"], "text": ch})
     return out
+
+def make_id_from_text(text: str) -> str:
+    # Use SHA256 hash, take first 16 bytes, convert to UUID
+    h = hashlib.sha256(text.encode("utf-8")).digest()[:16]
+    return str(uuid.UUID(bytes=h))
