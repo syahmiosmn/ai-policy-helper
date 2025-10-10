@@ -98,5 +98,4 @@ Vector DB: Qdrant (Docker)
 - **Performance optimization**: Cache frequent queries, reduce latency, and monitor metrics.
 
 ## 7. Video Demo
-[![Watch demo](https://img.youtube.com/vi/oEVUIni9TTc/maxresdefault.jpg)](https://youtu.be/oEVUIni9TTc)
-
+[![Watch demo](https://img.youtube.com/vi/RboaGKO-E3A/maxresdefault.jpg)](https://youtu.be/RboaGKO-E3A)
