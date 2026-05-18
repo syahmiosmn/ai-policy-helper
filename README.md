@@ -1,6 +1,6 @@
 # AI Policy & Product Helper
 
-**Local-first RAG system** for policy and product questions using **FastAPI**, **Next.js**, and **Qdrant**.  
+**RAG system** for policy and product questions using **FastAPI**, **Next.js**, and **Qdrant**.  
 Supports document ingestion, question-answering with **citations**, metrics, health checks, and a minimal chat/admin UI.
 
 ---
